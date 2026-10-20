@@ -3,9 +3,8 @@
 面向内部法规工程师的认证法规检索与问答系统（RAG）。第一阶段聚焦 CCC 认证体系、新能源汽车整车及关键部件。
 
 ## 项目状态
-- 已完成：目录初始化、15 份样本迁移与命名、元数据登记、条款级知识库、检索 POC、20 题测试集与召回基线
-- 路线已确认：基于现有项目改造 + 复用开源组件（详见 `docs/项目交接与下一步.md`）
-- 待办：向量检索/生成问答/前端（MVP）、扫描页 OCR、补 CQC-C1101-2020 实施细则等缺失法规
+- 已完成：MVP 已跑通（混合检索 + 重排 + DeepSeek 生成 + Streamlit 前端），召回 hit@5 = 90%（带重排 hit@1 = 16/20）
+- 待办：扫描页 OCR（69 页）、补 CQC-C1101-2020 实施细则等缺失法规、BGE-M3/GPU 质量升级
 
 ## 目录结构
 ```
@@ -33,7 +32,8 @@ Renzheng-QA/
 
 ## 技术选型（已确认 2026-09-28）
 - LLM：DeepSeek（OpenAI 兼容，可切本地 Ollama/vLLM）
-- Embedding：BGE-M3 + BGE-reranker（本地）
+- Embedding：bge-small-zh-v1.5（MVP，CPU 友好；BGE-M3 可选升级）
+- 重排：bge-reranker-base（本地）
 - 向量库：Chroma（嵌入式）
 - 检索：BM25 + 稠密向量 RRF 融合 + 重排
 - 前端：Streamlit
@@ -42,7 +42,7 @@ Renzheng-QA/
 
 ### 环境要求
 - Python 3.10+（在 3.12 上验证）
-- 混合检索需下载 BGE-M3 模型；生成式问答需自备 DeepSeek API Key
+- 混合检索需下载 bge-small-zh-v1.5 与 bge-reranker-base；生成式问答需自备 DeepSeek API Key
 
 ### 1. 安装依赖
 ```bash
@@ -60,12 +60,13 @@ pip install -r requirements.txt
 python scripts/retrieval_poc.py "动力电池系统需要满足哪些强制性国标"
 ```
 
-### 4. 混合检索（BM25 + BGE-M3 + RRF）
+### 4. 混合检索（BM25 + 稠密向量 + RRF + 重排）
 ```bash
-python scripts/download_model.py            # 下载 BGE-M3；网络不佳可设 HF_DOWNLOAD_BASE=https://hf-mirror.com
+python scripts/download_model.py            # 默认下载 bge-small-zh-v1.5；网络不佳可设 HF_DOWNLOAD_BASE=https://hf-mirror.com
 python scripts/build_index.py               # 构建 BM25 + 向量索引
-python scripts/build_index.py --query "电动汽车交流充电桩认证规则"
+python scripts/build_index.py --query "电动汽车交流充电桩认证规则" --rerank
 ```
+> bge-reranker-base 在首次启用 `--rerank` 时自动下载；也可用 `scripts/download_model.py` 配合环境变量 `HF_REPO`/`LOCAL_MODEL_DIR`/`HF_BIG_FILE`/`HF_SMALL_FILES` 提前下载。
 
 ### 5. 生成式问答（DeepSeek，可溯源 + 低置信度拒答）
 ```powershell
@@ -81,6 +82,7 @@ streamlit run app.py
 ### 7. 召回评估
 ```bash
 python scripts/eval_recall.py
+python scripts/eval_hybrid.py --rerank      # 混合检索（可选重排）召回
 ```
 
 ### 关键产出
