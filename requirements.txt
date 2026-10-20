@@ -7,4 +7,5 @@ requests
 streamlit
 rapidocr-onnxruntime
 torch
+torchvision
 python-dotenv
