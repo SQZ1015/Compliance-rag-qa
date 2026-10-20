@@ -85,6 +85,20 @@ python scripts/eval_recall.py
 python scripts/eval_hybrid.py --rerank      # 混合检索（可选重排）召回
 ```
 
+## 无需 Key 使用（演示 / 简历作品集）
+
+- **本地演示**：本机已配置 `.env`，直接 `streamlit run app.py` 即可，无需手动填 Key。
+- **公开 Demo（推荐发给面试官）**：部署到 Streamlit Cloud，把 Key 放在服务端 Secrets，访客零配置即可提问。
+  1. 把本仓库推送到 GitHub。
+  2. 到 https://streamlit.io/cloud 用 GitHub 登录 → `Create app` → 选择本仓库、主文件填 `app.py`。
+  3. 在 `Advanced settings → Secrets` 填：
+     ```toml
+     DEEPSEEK_API_KEY = "sk-xxx"
+     ```
+  4. 部署后即可拿到公开 URL，放进简历或发给面试官。
+- **安全提醒**：不要把 DeepSeek API Key 提交到仓库（`data/raw/`、`.env`、`.streamlit/secrets.toml` 均已 gitignore）；访客如需本地运行，复制 `.env.example` 为 `.env` 并填自己的 Key。
+- 首次启动会自动下载嵌入模型并构建索引（约 1–2 分钟），之后直接可用。
+
 ### 关键产出
 - 知识库：`data/processed/knowledge_base.jsonl`
 - 测试集：`data/processed/test_questions.jsonl`

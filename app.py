@@ -19,10 +19,18 @@ def load_retriever():
     return get_retriever()
 
 
+def _secret(key, default=""):
+    try:
+        return st.secrets.get(key, default)
+    except Exception:
+        return default
+
+
 st.sidebar.title("配置")
 api_key = st.sidebar.text_input(
     "DeepSeek API Key", type="password",
-    value=os.environ.get("DEEPSEEK_API_KEY", ""),
+    value=_secret("DEEPSEEK_API_KEY", os.environ.get("DEEPSEEK_API_KEY", "")),
+    help="留空则进入检索演示模式；部署到云端时由服务端密钥自动注入，访客无需填写。",
 )
 base_url = st.sidebar.text_input(
     "API Base URL", value=os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
@@ -47,7 +55,7 @@ if st.button("提问") and query:
             answer = generate(query, chunks, api_key=api_key, base_url=base_url, model=model)
         st.markdown(answer or "（生成失败）")
     else:
-        st.info("请在左侧填入 DeepSeek API Key 以启用生成式回答；当前仅展示检索到的条款。")
+        st.info("当前未配置 DeepSeek API Key，进入“检索演示模式”：仅展示命中的法规条款与引用。可在左侧填入 Key 启用生成式回答，或按 README 部署为公开 Demo。")
 
     st.subheader("引用来源")
     if not chunks:

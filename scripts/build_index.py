@@ -14,9 +14,10 @@ from pathlib import Path
 
 import numpy as np
 
-# 模型缓存放 D 盘（C 盘空间不足）；可用环境变量覆盖
-os.environ.setdefault("HF_HOME", r"D:\hf_cache")
-os.environ.setdefault("HF_HUB_CACHE", r"D:\hf_cache\hub")
+# 本机 C 盘空间不足，Windows 下模型缓存放 D 盘；可用环境变量覆盖（云端默认使用标准 HF 缓存）
+if os.name == "nt":
+    os.environ.setdefault("HF_HOME", r"D:\hf_cache")
+    os.environ.setdefault("HF_HUB_CACHE", r"D:\hf_cache\hub")
 os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
@@ -88,6 +89,18 @@ def build():
         metadatas=[clean_meta(c) for c in chunks],
     )
     return len(chunks), col.count()
+
+
+def index_exists():
+    return BM25_FILE.exists() and CHROMA_DIR.exists()
+
+
+def ensure_index():
+    """索引不存在时自动构建（便于全新 clone / 云端部署开箱即用）。"""
+    if index_exists():
+        return False
+    build()
+    return True
 
 
 class HybridRetriever:

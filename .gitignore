@@ -10,6 +10,7 @@ env/
 .env
 .env.*
 !.env.example
+.streamlit/secrets.toml
 
 # AWS 凭据（保险起见）
 .aws/

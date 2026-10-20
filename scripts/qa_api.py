@@ -20,7 +20,7 @@ except Exception:
 
 import requests  # noqa: E402
 
-from build_index import HybridRetriever, cite  # noqa: E402
+from build_index import HybridRetriever, cite, ensure_index  # noqa: E402
 
 BASE_URL = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
@@ -38,6 +38,7 @@ _retriever = None
 def get_retriever():
     global _retriever
     if _retriever is None:
+        ensure_index()
         _retriever = HybridRetriever()
     return _retriever
 
