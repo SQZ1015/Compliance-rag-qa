@@ -234,6 +234,12 @@ if not st.session_state.messages:
             unsafe_allow_html=True,
         )
 
+        st.markdown("#### 💡 快速开始")
+        qcols = st.columns(2)
+        for i, q in enumerate(SAMPLES):
+            with qcols[i % 2]:
+                st.button(q, use_container_width=True, on_click=ask, args=(q,))
+
 for m in st.session_state.messages:
     if m["role"] == "user":
         with st.chat_message("user", avatar="🧑‍💼"):
