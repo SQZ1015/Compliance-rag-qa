@@ -1,5 +1,9 @@
 # CCC 新能源汽车认证法规智能问答助手
 
+**在线 Demo**：https://ccc-regulation.streamlit.app/
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ccc-regulation.streamlit.app/)
+
 面向内部法规工程师的认证法规检索与问答系统（RAG）。第一阶段聚焦 CCC 认证体系、新能源汽车整车及关键部件。
 
 ## 项目状态
