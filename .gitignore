@@ -9,6 +9,7 @@ env/
 # 环境与密钥
 .env
 .env.*
+!.env.example
 
 # AWS 凭据（保险起见）
 .aws/

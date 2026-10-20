@@ -6,3 +6,5 @@ chromadb
 requests
 streamlit
 rapidocr-onnxruntime
+torch
+python-dotenv

@@ -12,10 +12,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 BASE = os.environ.get("HF_DOWNLOAD_BASE", "https://huggingface.co").rstrip("/")
-REPO = "BAAI/bge-m3"
+REPO = os.environ.get("HF_REPO", "BAAI/bge-m3")
 OUT = Path(os.environ.get("LOCAL_MODEL_DIR", r"D:\hf_cache\local\bge-m3"))
+BIG_FILE = os.environ.get("HF_BIG_FILE", "pytorch_model.bin")
 
-SMALL_FILES = [
+SMALL_FILES = [f for f in os.environ.get("HF_SMALL_FILES", "").split(",") if f] or [
     "config.json",
     "config_sentence_transformers.json",
     "sentence_bert_config.json",
@@ -26,7 +27,6 @@ SMALL_FILES = [
     "sentencepiece.bpe.model",
     "1_Pooling/config.json",
 ]
-BIG_FILE = "pytorch_model.bin"
 CHUNK = 8 * 1024 * 1024
 WORKERS = 16
 

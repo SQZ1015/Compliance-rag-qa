@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
 """DeepSeek 生成式问答：检索 -> 构造引用上下文 -> 生成（OpenAI 兼容接口）+ 低置信度拒答。
 
-环境变量：
+环境变量 / .env：
   DEEPSEEK_API_KEY   必填（未配置时仅返回检索条款，不调用生成）
   DEEPSEEK_BASE_URL  默认 https://api.deepseek.com
   DEEPSEEK_MODEL     默认 deepseek-chat
 """
 import os
+import sys
+from pathlib import Path
 
-import requests
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from build_index import HybridRetriever, cite
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+except Exception:
+    pass
+
+import requests  # noqa: E402
+
+from build_index import HybridRetriever, cite  # noqa: E402
 
 BASE_URL = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
@@ -44,16 +54,19 @@ def build_context(chunks):
     return "\n\n".join(lines)
 
 
-def generate(query, chunks, temperature=0.1):
-    if not API_KEY:
+def generate(query, chunks, api_key=None, base_url=None, model=None, temperature=0.1):
+    key = api_key or API_KEY
+    if not key:
         return None
+    url = (base_url or BASE_URL).rstrip("/") + "/chat/completions"
+    mdl = model or MODEL
     context = build_context(chunks)
     user_prompt = f"问题：{query}\n\n可参考法规条款：\n{context}\n\n请基于以上条款回答，并逐条给出引用。"
     resp = requests.post(
-        f"{BASE_URL}/chat/completions",
-        headers={"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"},
+        url,
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
         json={
-            "model": MODEL,
+            "model": mdl,
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
@@ -78,9 +91,9 @@ def answer(query, k=5, use_rerank=False):
 
 
 def main():
-    import sys
+    import sys as _sys
 
-    query = " ".join(sys.argv[1:]).strip()
+    query = " ".join(_sys.argv[1:]).strip()
     if not query:
         query = "动力电池系统需要满足哪些强制性国标"
     chunks = retrieve_with_sources(query)

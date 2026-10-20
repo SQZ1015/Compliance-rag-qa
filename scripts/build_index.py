@@ -30,15 +30,21 @@ INDEX_DIR = ROOT / "data" / "processed" / "index"
 CHROMA_DIR = INDEX_DIR / "chroma"
 BM25_FILE = INDEX_DIR / "bm25.pkl"
 
-EMB_MODEL = "BAAI/bge-m3"
-RERANK_MODEL = "BAAI/bge-reranker-large"
-LOCAL_MODEL_DIR = Path(os.environ.get("LOCAL_MODEL_DIR", r"D:\hf_cache\local\bge-m3"))
+EMB_MODEL = "BAAI/bge-small-zh-v1.5"  # MVP 默认：CPU 友好；BGE-M3 已下载于 D:\hf_cache\local\bge-m3，可切换升级
+RERANK_MODEL = "BAAI/bge-reranker-base"
+LOCAL_MODEL_DIR = Path(os.environ.get("LOCAL_MODEL_DIR", r"D:\hf_cache\local\bge-small-zh-v1.5"))
+RERANK_LOCAL_DIR = Path(os.environ.get("RERANK_LOCAL_DIR", r"D:\hf_cache\local\bge-reranker-base"))
 RRF_K = 60
 
 
 def embedding_model_path():
     """本地已下载则用本地目录，否则用 HF 模型名（触发自动下载）。"""
     return str(LOCAL_MODEL_DIR) if LOCAL_MODEL_DIR.exists() else EMB_MODEL
+
+
+def reranker_path():
+    """本地已下载则用本地目录，否则用 HF 模型名。"""
+    return str(RERANK_LOCAL_DIR) if RERANK_LOCAL_DIR.exists() else RERANK_MODEL
 
 
 def clean_meta(chunk):
@@ -120,23 +126,23 @@ class HybridRetriever:
         from sentence_transformers import CrossEncoder
 
         if self._reranker is None:
-            self._reranker = CrossEncoder(RERANK_MODEL)
+            self._reranker = CrossEncoder(reranker_path())
         pairs = [[query, c["text"]] for c in candidates]
         scores = self._reranker.predict(pairs)
         order = np.argsort(scores)[::-1][:k]
         return [candidates[i] for i in order]
 
-    def search(self, query, k=5, use_rerank=False):
+    def search(self, query, k=5, use_rerank=False, dense_weight=1.0, sparse_weight=1.0):
         dense = self._dense(query, k * 4)
         sparse = self._bm25(query, k * 4)
 
         fused = {}
         for rank, c in enumerate(dense):
             idx = self.chunk_to_idx[id(c)]
-            fused[idx] = fused.get(idx, 0.0) + 1.0 / (RRF_K + rank + 1)
+            fused[idx] = fused.get(idx, 0.0) + dense_weight / (RRF_K + rank + 1)
         for rank, c in enumerate(sparse):
             idx = self.chunk_to_idx[id(c)]
-            fused[idx] = fused.get(idx, 0.0) + 1.0 / (RRF_K + rank + 1)
+            fused[idx] = fused.get(idx, 0.0) + sparse_weight / (RRF_K + rank + 1)
 
         ranked = sorted(fused.items(), key=lambda x: x[1], reverse=True)[:k]
         candidates = [self.chunks[i] for i, _ in ranked]
