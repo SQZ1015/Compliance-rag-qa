@@ -7,11 +7,18 @@
 """
 import argparse
 import json
+import os
 import pickle
 import sys
 from pathlib import Path
 
 import numpy as np
+
+# 模型缓存放 D 盘（C 盘空间不足）；可用环境变量覆盖
+os.environ.setdefault("HF_HOME", r"D:\hf_cache")
+os.environ.setdefault("HF_HUB_CACHE", r"D:\hf_cache\hub")
+os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -25,7 +32,13 @@ BM25_FILE = INDEX_DIR / "bm25.pkl"
 
 EMB_MODEL = "BAAI/bge-m3"
 RERANK_MODEL = "BAAI/bge-reranker-large"
+LOCAL_MODEL_DIR = Path(os.environ.get("LOCAL_MODEL_DIR", r"D:\hf_cache\local\bge-m3"))
 RRF_K = 60
+
+
+def embedding_model_path():
+    """本地已下载则用本地目录，否则用 HF 模型名（触发自动下载）。"""
+    return str(LOCAL_MODEL_DIR) if LOCAL_MODEL_DIR.exists() else EMB_MODEL
 
 
 def clean_meta(chunk):
@@ -56,7 +69,7 @@ def build():
         pickle.dump({"chunks": chunks, "docs": docs, "idf": idf, "avgdl": avgdl}, f)
 
     # 2) BGE-M3 稠密向量
-    model = SentenceTransformer(EMB_MODEL)
+    model = SentenceTransformer(embedding_model_path())
     embs = model.encode(texts, normalize_embeddings=True, batch_size=64, show_progress_bar=True)
 
     # 3) Chroma 持久化
@@ -86,7 +99,7 @@ class HybridRetriever:
         self.avgdl = data["avgdl"]
         self.chunk_to_idx = {id(c): i for i, c in enumerate(self.chunks)}
 
-        self.model = SentenceTransformer(EMB_MODEL)
+        self.model = SentenceTransformer(embedding_model_path())
         self.client = chromadb.PersistentClient(path=str(CHROMA_DIR))
         self.col = self.client.get_collection("regulations")
         self._reranker = None

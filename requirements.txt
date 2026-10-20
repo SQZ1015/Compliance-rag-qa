@@ -1,0 +1,8 @@
+pdfplumber
+python-docx
+numpy
+sentence-transformers
+chromadb
+requests
+streamlit
+rapidocr-onnxruntime
