@@ -1,0 +1,20 @@
+{"id": "1", "category": "认证范围与标准", "question": "新能源汽车整车进行CCC认证依据哪些标准？", "expected_sources": ["新增汽车产品强制性认证依据标准", "CNCA-C11-01", "GB 18384", "GB 38031", "GB 7258"]}
+{"id": "2", "category": "认证范围与标准", "question": "动力电池系统需要满足哪些CCC或强制性国标？", "expected_sources": ["GB 38031", "GB 18384"]}
+{"id": "3", "category": "认证范围与标准", "question": "充电接口和充电模式有哪些强制性要求？", "expected_sources": ["27930"]}
+{"id": "4", "category": "认证范围与标准", "question": "高压电气安全对绝缘、耐压、爬电距离有什么要求？", "expected_sources": ["GB 18384"]}
+{"id": "5", "category": "认证范围与标准", "question": "电动汽车EMC测试依据哪个标准，包含哪些项目？", "expected_sources": ["GB 34660"]}
+{"id": "6", "category": "认证范围与标准", "question": "电池包跌落、挤压、过充、热失控等安全测试的判定要求是什么？", "expected_sources": ["GB 38031"]}
+{"id": "7", "category": "认证范围与标准", "question": "电动汽车与燃料电池汽车在CCC认证适用标准上有哪些差异？", "expected_sources": ["CNCA-C11-01", "GB 18384"]}
+{"id": "8", "category": "认证流程与资料", "question": "CCC认证流程包括哪些阶段，通常需要多长时间？", "expected_sources": ["CNCA-C11-01", "CQC-C1101", "CQC14", "CQC56"]}
+{"id": "9", "category": "认证流程与资料", "question": "首次申请整车CCC需要提交哪些资料？", "expected_sources": ["CNCA-C11-01", "CQC-C1101"]}
+{"id": "10", "category": "认证流程与资料", "question": "工厂检查包含哪些内容，检查频率是多少？", "expected_sources": ["CNCA-C11-01", "CQC-C1101", "CQC14", "CQC56"]}
+{"id": "11", "category": "认证流程与资料", "question": "获证后产品一致性检查不合格会如何处理？", "expected_sources": ["CNCA-C11-01", "CQC14", "CQC56"]}
+{"id": "12", "category": "认证流程与资料", "question": "进口新能源汽车的CCC认证要求是什么？", "expected_sources": ["CNCA-C11-01"]}
+{"id": "13", "category": "证书标志与变更", "question": "CCC证书的有效期和延续申请如何办理？", "expected_sources": ["CNCA-C11-01", "CQC14", "CQC56"]}
+{"id": "14", "category": "证书标志与变更", "question": "已获证产品发生关键元器件或结构变化，哪些必须重新检测？", "expected_sources": ["CNCA-C11-01", "CQC14", "CQC56"]}
+{"id": "15", "category": "证书标志与变更", "question": "CCC标志应如何使用，铭牌和标志位置有什么要求？", "expected_sources": ["CNCA-C11-01", "GB 7258"]}
+{"id": "16", "category": "证书标志与变更", "question": "新能源汽车随车文件和警告标识有哪些强制要求？", "expected_sources": ["GB 18384", "GB 7258"]}
+{"id": "17", "category": "特殊情形", "question": "哪些新能源汽车产品或部件可以豁免CCC？", "expected_sources": ["CNCA-C11-01"]}
+{"id": "18", "category": "特殊情形", "question": "电池回收或生产者责任延伸是否属于CCC认证范围？", "expected_sources": ["CNCA-C11-01"]}
+{"id": "19", "category": "特殊情形", "question": "远程监控或安全监控平台是否有强制性标准要求？", "expected_sources": ["32960", "18384"]}
+{"id": "20", "category": "特殊情形", "question": "同一型号不同配置的车辆如何界定认证单元？", "expected_sources": ["CNCA-C11-01", "CQC-C1101", "CQC14", "CQC56"]}

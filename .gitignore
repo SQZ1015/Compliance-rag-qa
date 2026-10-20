@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 环境与密钥
+.env
+.env.*
+
+# AWS 凭据（保险起见）
+.aws/
+
+# 法规 PDF 原文（涉版权且体积大，不提交；获取方式见 README）
+data/raw/
+
+# 检索索引产物（可重建，不提交）
+data/processed/index/
+
+# 系统文件
+Thumbs.db
+Desktop.ini
+
+# 日志
+*.log
